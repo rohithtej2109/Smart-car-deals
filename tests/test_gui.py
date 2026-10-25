@@ -45,5 +45,12 @@ at.radio(key='cluster_view').set_value('Segments').run()
 at.multiselect[0].set_value([]).run();ok(at,'Empty cluster filter')
 at.radio(key='cluster_view').set_value('After tuning').run();ok(at,'Clustering after tuning')
 at.radio(key='cluster_view').set_value('Before vs after').run();ok(at,'Clustering before/after')
+at.radio(key='cluster_view').set_value('Diagnostics').run()
+for kind in ['kmeans', 'agglomerative']:
+    at.selectbox(key='cluster_model').set_value(kind).run()
+    at.selectbox(key=f'cluster_diagnostic_{kind}').set_value('Five-fold tuning search').run()
+    ok(at, f'Cluster diagnostics five-fold tuning search {kind}')
+    df = at.dataframe[0].value
+    assert 'linkage' in df.columns, f'linkage missing from {kind}'
 at.sidebar.radio[0].set_value('Evaluation metrics').run();ok(at,'Evaluation metrics')
 print('ALL GUI CHECKS PASSED')

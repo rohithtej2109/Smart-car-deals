@@ -785,7 +785,19 @@ elif page == 'Car clusters':
                    ('Elbow curve' if kind == 'kmeans' else 'Dendrogram'): ('elbow.png' if kind == 'kmeans' else 'dendrogram.png')}
         chart = st.selectbox('Cluster diagnostic', list(choices) + ['Five-fold tuning search'], key=f'cluster_diagnostic_{kind}')
         if chart == 'Five-fold tuning search':
-            search_results = table(f'results/{kind}/search_results.csv').drop(columns='linkage', errors='ignore')
+            search_results = table(f'results/{kind}/search_results.csv').copy()
+            if kind == 'kmeans':
+                search_results['linkage'] = 'not applicable'
+            else:
+                linkage_types = ['All'] + sorted(search_results['linkage'].dropna().unique().tolist())
+                chosen_linkage = st.radio(
+                    'Linkage type',
+                    linkage_types,
+                    horizontal=True,
+                    key='diagnostic_linkage_filter'
+                )
+                if chosen_linkage != 'All':
+                    search_results = search_results[search_results['linkage'] == chosen_linkage]
             st.dataframe(search_results, hide_index=True, width='stretch')
         else:
             st.image(str(ROOT / f'results/{kind}/{choices[chart]}'), width='stretch')
