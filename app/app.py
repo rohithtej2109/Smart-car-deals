@@ -8,6 +8,12 @@ import base64
 import html
 import streamlit as st
 
+try:
+    import sklearn._loss._loss
+    sys.modules['_loss'] = sklearn._loss._loss
+except Exception:
+    pass
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.schema import (
